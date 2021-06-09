@@ -3,6 +3,7 @@ package com.example.asteroidradarapp.main
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.asteroidradarapp.Constants
 import com.example.asteroidradarapp.Constants.API_KEY
 import com.example.asteroidradarapp.database.getAsteroidDatabase
 import com.example.asteroidradarapp.domain.Asteroid
@@ -21,12 +22,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // Do reference a repository
     private val asteroidsRepository = AsteroidRepository(database)
-    var asteroidsList = asteroidsRepository.asteroidList
 
-    // Use LiveDAta
-//    private val _asteroids = MutableLiveData<List<Asteroid>>()
-//    val asteroid: LiveData<List<Asteroid>>
-//        get() = _asteroids
+    private val _asteroidFilter = MutableLiveData(NasaApiFilter.SHOW_SAVE)
+
+    // The internal MutableLiveData that stores the status of the most recent request
+    private val _status = MutableLiveData<String>()
+    val status: LiveData<String>
+    get() = _status
+
+     //Use LiveDAta
+    private val _asteroids = MutableLiveData<List<Asteroid>>()
+    val asteroid: LiveData<List<Asteroid>>
+        get() = _asteroids
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay>
@@ -37,11 +44,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val navigateToSelectedAsteroid: LiveData<Asteroid>
         get() = _navigateToSelectedAsteroid
 
-
     init {
-        getAsteroidProperties()
         getPictureOfDay()
+        viewModelScope.launch {
+            asteroidsRepository.refreshAsteroids()
+        }
     }
+//    init {
+//        getAsteroidProperties()
+//        getPictureOfDay()
+//    }
+
+    val asteroidList = asteroidsRepository.asteroids
 
     private fun getAsteroidProperties() {
         viewModelScope.launch {
@@ -56,12 +70,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun getPictureOfDay() {
         viewModelScope.launch {
             try {
-                _pictureOfDay.value = NasaApi.retrofitService.getPictureOfDay(API_KEY)
+                val result = withContext(Dispatchers.IO) {
+                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
+                }
+                _pictureOfDay.value = result
+                _status.value = "   image URL : ${_pictureOfDay.value!!.url}"
             } catch (e: Exception) {
-                Log.d("ggg", "error: $e")
+                _status.value = "Failure: ${e.message}"
             }
         }
     }
+
 
     fun displayAsteroidDetails(asteroid: Asteroid) {
         _navigateToSelectedAsteroid.value = asteroid
@@ -69,5 +88,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun displayAsteroidDetailsComplete() {
         _navigateToSelectedAsteroid.value = null
+    }
+
+    // Click func to filter menu items based on enum parameters
+    fun updateFilter (filters: NasaApiFilter) {
+        _asteroidFilter.postValue(filters)
     }
 }

@@ -1,10 +1,11 @@
 package com.example.asteroidradarapp.network
 
 import com.example.asteroidradarapp.database.DatabaseAsteroid
+import com.example.asteroidradarapp.domain.Asteroid
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class NetworkAsteroidContainer(val asteroids: List<NetworkAsteroid>)
+data class NetworkAsteroidContainer(val asteroids: List<Asteroid>)
 
 @JsonClass(generateAdapter = true)
 data class NetworkAsteroid(

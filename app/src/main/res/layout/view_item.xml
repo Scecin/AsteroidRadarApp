@@ -9,17 +9,13 @@
             name="detail"
             type="com.example.asteroidradarapp.domain.Asteroid" />
 
-        <variable
-            name="clickListener"
-            type="com.example.asteroidradarapp.main.MainAdapter.OnClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
-        android:orientation="horizontal"
-        android:onClick="@{() -> clickListener.onClick(detail)}">
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/title"

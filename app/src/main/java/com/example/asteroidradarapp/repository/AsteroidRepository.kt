@@ -7,11 +7,8 @@ import com.example.asteroidradarapp.Constants
 import com.example.asteroidradarapp.Constants.API_KEY
 import com.example.asteroidradarapp.database.AsteroidsDatabase
 import com.example.asteroidradarapp.database.asDomainModel
-import com.example.asteroidradarapp.database.asDatabaseModel
 import com.example.asteroidradarapp.domain.Asteroid
-import com.example.asteroidradarapp.network.NasaApi
-import com.example.asteroidradarapp.network.getNextSevenDaysFormattedDates
-import com.example.asteroidradarapp.network.parseAsteroidsJsonResult
+import com.example.asteroidradarapp.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -23,7 +20,7 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
     private var endDate = getNextSevenDaysFormattedDates()[Constants.DEFAULT_END_DATE_DAYS]
 
 
-    val asteroidList: LiveData<List<Asteroid>> =
+    val asteroids: LiveData<List<Asteroid>> =
         Transformations.map(database.asteroidDao.getAllAsteroids()) {
             it?.asDomainModel()
         }
@@ -40,7 +37,7 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
             try {
                 val asteroids = NasaApi.retrofitService.getAsteroids(startDate, endDate, API_KEY)
                 val parsedAsteroids = parseAsteroidsJsonResult(JSONObject(asteroids))
-                database.asteroidDao.insertAll(*parsedAsteroids.asDatabaseModel())
+                database.asteroidDao.insertAll(NetworkAsteroidContainer(parsedAsteroids).asDatabaseModel())
             } catch (e: Exception) {
                 Log.w("ERROR", e.message.toString())
             }

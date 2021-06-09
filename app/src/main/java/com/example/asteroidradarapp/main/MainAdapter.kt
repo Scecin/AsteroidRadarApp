@@ -8,8 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.asteroidradarapp.databinding.ViewItemBinding
 import com.example.asteroidradarapp.domain.Asteroid
 
-class MainAdapter(private val clickListener: OnClickListener) :
+class MainAdapter(private val onClickListener: OnClickListener) :
     ListAdapter<Asteroid, MainAdapter.AsteroidViewHolder>(DiffCallback) {
+
+    class AsteroidViewHolder(private val binding: ViewItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(asteroid: Asteroid) {
+            binding.detail = asteroid
+            binding.executePendingBindings()
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsteroidViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -20,17 +28,9 @@ class MainAdapter(private val clickListener: OnClickListener) :
     override fun onBindViewHolder(holder: AsteroidViewHolder, position: Int) {
         val asteroid = getItem(position)
         holder.itemView.setOnClickListener {
-            clickListener.clickListener(asteroid)
+            onClickListener.onclick(asteroid)
         }
         holder.bind(asteroid)
-    }
-
-    class AsteroidViewHolder(private val binding: ViewItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(asteroid: Asteroid){
-            binding.detail = asteroid
-            binding.executePendingBindings()
-        }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<Asteroid>() {
@@ -44,7 +44,7 @@ class MainAdapter(private val clickListener: OnClickListener) :
         }
     }
 
-    class OnClickListener(val clickListener: (asteroid: Asteroid) -> Unit) {
-        fun onClick(asteroid: Asteroid) = clickListener(asteroid)
+    class OnClickListener(val onClickListener: (asteroid: Asteroid) -> Unit) {
+        fun onclick(asteroid: Asteroid) = onClickListener(asteroid)
     }
 }

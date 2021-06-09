@@ -17,7 +17,7 @@ interface AsteroidDao {
     fun getTodayAsteroids(todayDate: String): LiveData<List<DatabaseAsteroid>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg asteroids: DatabaseAsteroid)
+    fun insertAll(asDatabaseModel: Array<DatabaseAsteroid>)
 }
 
 // Implement a database
