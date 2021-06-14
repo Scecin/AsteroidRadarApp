@@ -25,7 +25,7 @@ interface AsteroidDao {
 @Dao
 interface PictureOfDayDao{
 
-    @Query("select * from DatabasePictureOfDay")
+    @Query("select * from databasePictureOfDay")
     fun getPictureOfDay(): LiveData<DatabasePictureOfDay>
 
 
@@ -33,7 +33,7 @@ interface PictureOfDayDao{
     fun insertAll(vararg pictureOfDay: DatabasePictureOfDay)
 
 
-    @Query("DELETE FROM  databasepictureofday")
+    @Query("DELETE FROM  databasePictureOfDay")
     fun clear()
 
 }

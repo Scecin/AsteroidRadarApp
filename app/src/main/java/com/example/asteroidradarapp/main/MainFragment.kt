@@ -44,9 +44,9 @@ class MainFragment : Fragment() {
         /**
          * Adapter to handle click
          * */
-//        asteroidAdapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
-//            viewModel.displayAsteroidDetails(asteroid)
-//        })
+        asteroidAdapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
+            viewModel.displayAsteroidDetails(asteroid)
+        })
 
         // Use the RecyclerView
         binding.asteroidRecycler.layoutManager = LinearLayoutManager(requireContext())
@@ -58,6 +58,29 @@ class MainFragment : Fragment() {
             if (null != it) {
                 this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
                 viewModel.displayAsteroidDetailsComplete()
+            }
+        })
+
+        /**
+         * Load pic of day
+         * */
+        viewModel.picOfDay.observe(viewLifecycleOwner, Observer {pictureOfDay ->
+
+            if (pictureOfDay != null && pictureOfDay.mediaType == Constants.MEDIA_TYPE) {
+                Picasso.with(requireContext()).load(pictureOfDay.url).into(binding.activityMainImageOfTheDay)
+            }
+            else {
+                Picasso.with(context).load(R.drawable.asteroid_safe).into(binding.activityMainImageOfTheDay)
+            }
+
+        })
+
+        /**
+         * Submit list item to recyclerview to display
+         * */
+        viewModel.asteroidList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                asteroidAdapter.submitList(it)
             }
         })
 

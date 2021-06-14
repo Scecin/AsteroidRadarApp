@@ -18,7 +18,7 @@ enum class AsteroidApiStatus { LOADING, ERROR, DONE }
 
 class MainViewModel(application: Application) : ViewModel() {
 
-    private lateinit var asteroidListLiveData: LiveData<List<Asteroid>>
+//    private lateinit var asteroidListLiveData: LiveData<List<Asteroid>>
     // Do reference a database
     private val database = getAsteroidDatabase(application)
 
@@ -55,7 +55,7 @@ class MainViewModel(application: Application) : ViewModel() {
 
     init {
         getAsteroidProperties()
-        getPictureOfDay()
+//        getPictureOfDay()
         updateFilter(NasaApiFilter.SHOW_TODAY)
     }
 //    init {
@@ -75,29 +75,16 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-    private fun getPictureOfDay() {
-        _status.value = AsteroidApiStatus.LOADING
-        viewModelScope.launch(context = Dispatchers.IO) {
+    private suspend fun getPictureOfDay() {
+        withContext(Dispatchers.IO) {
             try {
-
-                asteroidsRepository.refreshPictureOfDay()
-                _status.postValue(AsteroidApiStatus.DONE)
-            } catch (ex: Exception) {
-                Log.d("Debug", "3 - Debugging  ${ex.localizedMessage}")
-                _status.value = AsteroidApiStatus.ERROR
+                _pictureOfDay.postValue(
+                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
+                )
+            } catch (e: Exception) {
+                Log.e("refreshPictureOfDay", e.printStackTrace().toString())
             }
         }
-//        viewModelScope.launch {
-//            try {
-//                val result = withContext(Dispatchers.IO) {
-//                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
-//                }
-//                _pictureOfDay.value = result
-//                _status.value = "   image URL : ${_pictureOfDay.value!!.url}"
-//            } catch (e: Exception) {
-//                _status.value = "Failure: ${e.message}"
-//            }
-//        }
     }
 
 
@@ -110,10 +97,7 @@ class MainViewModel(application: Application) : ViewModel() {
     }
 
     // Click func to filter menu items based on enum parameters
-    fun updateFilter (filter: NasaApiFilter) {
-        //Observe the new filtered LiveData
-        asteroidListLiveData = asteroidsRepository.getAsteroidSelection(filter)
+    fun updateFilter (filters: NasaApiFilter) {
+         _asteroidFilter.postValue(filters)
     }
-//        _asteroidFilter.postValue(filters)
-//    }
 }
