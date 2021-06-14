@@ -16,14 +16,32 @@ interface AsteroidDao {
     @Query("select * from databaseAsteroid where closeApproachDate = :todayDate order by closeApproachDate desc")
     fun getTodayAsteroids(todayDate: String): LiveData<List<DatabaseAsteroid>>
 
+    @Query("SELECT * FROM databaseasteroid where closeApproachDate between :startDay and :endDay order by closeApproachDate DESC")
+    fun getWeekAsteroids(startDay: String,endDay: String): LiveData<List<DatabaseAsteroid>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(asDatabaseModel: Array<DatabaseAsteroid>)
 }
+@Dao
+interface PictureOfDayDao{
 
+    @Query("select * from DatabasePictureOfDay")
+    fun getPictureOfDay(): LiveData<DatabasePictureOfDay>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg pictureOfDay: DatabasePictureOfDay)
+
+
+    @Query("DELETE FROM  databasepictureofday")
+    fun clear()
+
+}
 // Implement a database
-@Database(entities = [DatabaseAsteroid::class], version = 1)
+@Database(entities = [DatabaseAsteroid::class, DatabasePictureOfDay::class], version = 1)
 abstract class AsteroidsDatabase : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
+    abstract val pictureOfDayDao: PictureOfDayDao
 }
 
 // Define getAsteroidDatabase

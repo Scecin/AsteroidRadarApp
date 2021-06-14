@@ -1,7 +1,6 @@
 package com.example.asteroidradarapp.network
 
 import com.example.asteroidradarapp.Constants.BASE_URL
-import com.example.asteroidradarapp.domain.Asteroid
 import com.example.asteroidradarapp.domain.PictureOfDay
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
@@ -12,8 +11,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+//Create a Filter enum that defines constants to match the query values our web service expects
 enum class NasaApiFilter(val value: String) {
-    SHOW_TODAY("today"), SHOW_WEEK("week"), SHOW_SAVE("save")
+    SHOW_TODAY("today"), SHOW_WEEK("week"), SHOW_SAVE("saved")
 }
 
 // Use the Moshi Builder to create a Moshi object with the KotlinJsonAdapterFactory

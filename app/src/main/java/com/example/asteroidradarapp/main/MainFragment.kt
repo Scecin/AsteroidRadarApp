@@ -27,7 +27,10 @@ class MainFragment : Fragment() {
     private lateinit var asteroidAdapter: MainAdapter
 
     private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onViewCreated()"
+        }
+        ViewModelProvider(this, MainViewModelFactory(activity.application)).get(MainViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -41,13 +44,15 @@ class MainFragment : Fragment() {
         /**
          * Adapter to handle click
          * */
-        asteroidAdapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
-            viewModel.displayAsteroidDetails(asteroid)
-        })
+//        asteroidAdapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
+//            viewModel.displayAsteroidDetails(asteroid)
+//        })
 
         // Use the RecyclerView
         binding.asteroidRecycler.layoutManager = LinearLayoutManager(requireContext())
-        binding.asteroidRecycler.adapter = asteroidAdapter
+        binding.asteroidRecycler.adapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
+            viewModel.displayAsteroidDetails(asteroid)
+        })
 
         viewModel.navigateToSelectedAsteroid.observe(viewLifecycleOwner, Observer {
             if (null != it) {

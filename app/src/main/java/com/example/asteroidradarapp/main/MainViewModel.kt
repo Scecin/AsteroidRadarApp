@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.asteroidradarapp.Constants
-import com.example.asteroidradarapp.Constants.API_KEY
 import com.example.asteroidradarapp.database.getAsteroidDatabase
 import com.example.asteroidradarapp.domain.Asteroid
 import com.example.asteroidradarapp.domain.PictureOfDay
@@ -15,8 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+enum class AsteroidApiStatus { LOADING, ERROR, DONE }
 
+class MainViewModel(application: Application) : ViewModel() {
+
+    private lateinit var asteroidListLiveData: LiveData<List<Asteroid>>
     // Do reference a database
     private val database = getAsteroidDatabase(application)
 
@@ -26,14 +28,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _asteroidFilter = MutableLiveData(NasaApiFilter.SHOW_SAVE)
 
     // The internal MutableLiveData that stores the status of the most recent request
-    private val _status = MutableLiveData<String>()
-    val status: LiveData<String>
+    private val _status = MutableLiveData<AsteroidApiStatus>()
+    val status: LiveData<AsteroidApiStatus>
     get() = _status
 
-     //Use LiveDAta
-    private val _asteroids = MutableLiveData<List<Asteroid>>()
-    val asteroid: LiveData<List<Asteroid>>
-        get() = _asteroids
+//    //This list will be observed in RecyclerView
+//    private val _asteroidList = MutableLiveData<List<Asteroid>>()
+//    val asteroidList: LiveData<List<Asteroid>>
+//        get() = _asteroidList
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay>
@@ -44,18 +46,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val navigateToSelectedAsteroid: LiveData<Asteroid>
         get() = _navigateToSelectedAsteroid
 
+//    private val asteroidListObserver = Observer<List<Asteroid>> {
+//        //Update new list to RecyclerView
+//        _asteroidList.value = it
+//    }
+    val asteroidList = asteroidsRepository.asteroid
+    val picOfDay = asteroidsRepository.pictureOfDay
+
     init {
+        getAsteroidProperties()
         getPictureOfDay()
-        viewModelScope.launch {
-            asteroidsRepository.refreshAsteroids()
-        }
+        updateFilter(NasaApiFilter.SHOW_TODAY)
     }
 //    init {
 //        getAsteroidProperties()
 //        getPictureOfDay()
 //    }
 
-    val asteroidList = asteroidsRepository.asteroids
+//    val pictureOfDay = asteroidsRepository.pictureOfDay
 
     private fun getAsteroidProperties() {
         viewModelScope.launch {
@@ -68,17 +76,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun getPictureOfDay() {
-        viewModelScope.launch {
+        _status.value = AsteroidApiStatus.LOADING
+        viewModelScope.launch(context = Dispatchers.IO) {
             try {
-                val result = withContext(Dispatchers.IO) {
-                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
-                }
-                _pictureOfDay.value = result
-                _status.value = "   image URL : ${_pictureOfDay.value!!.url}"
-            } catch (e: Exception) {
-                _status.value = "Failure: ${e.message}"
+
+                asteroidsRepository.refreshPictureOfDay()
+                _status.postValue(AsteroidApiStatus.DONE)
+            } catch (ex: Exception) {
+                Log.d("Debug", "3 - Debugging  ${ex.localizedMessage}")
+                _status.value = AsteroidApiStatus.ERROR
             }
         }
+//        viewModelScope.launch {
+//            try {
+//                val result = withContext(Dispatchers.IO) {
+//                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
+//                }
+//                _pictureOfDay.value = result
+//                _status.value = "   image URL : ${_pictureOfDay.value!!.url}"
+//            } catch (e: Exception) {
+//                _status.value = "Failure: ${e.message}"
+//            }
+//        }
     }
 
 
@@ -91,7 +110,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Click func to filter menu items based on enum parameters
-    fun updateFilter (filters: NasaApiFilter) {
-        _asteroidFilter.postValue(filters)
+    fun updateFilter (filter: NasaApiFilter) {
+        //Observe the new filtered LiveData
+        asteroidListLiveData = asteroidsRepository.getAsteroidSelection(filter)
     }
+//        _asteroidFilter.postValue(filters)
+//    }
 }
