@@ -27,7 +27,7 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL).build()
 
 interface NasaApiService {
-    @GET("new/rest/v1/feed")
+    @GET("neo/rest/v1/feed")
     suspend fun getAsteroids(
         @Query("api_key") apiKey: String,
         @Query("start_date") startDate: String,

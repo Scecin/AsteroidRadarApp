@@ -18,19 +18,22 @@ enum class AsteroidApiStatus { LOADING, ERROR, DONE }
 
 class MainViewModel(application: Application) : ViewModel() {
 
-//    private lateinit var asteroidListLiveData: LiveData<List<Asteroid>>
     // Do reference a database
     private val database = getAsteroidDatabase(application)
 
     // Do reference a repository
     private val asteroidsRepository = AsteroidRepository(database)
 
+    val asteroidList = asteroidsRepository.asteroid
+    val picOfDay = asteroidsRepository.pictureOfDay
+
+
     private val _asteroidFilter = MutableLiveData(NasaApiFilter.SHOW_SAVE)
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<AsteroidApiStatus>()
     val status: LiveData<AsteroidApiStatus>
-    get() = _status
+        get() = _status
 
 //    //This list will be observed in RecyclerView
 //    private val _asteroidList = MutableLiveData<List<Asteroid>>()
@@ -46,17 +49,17 @@ class MainViewModel(application: Application) : ViewModel() {
     val navigateToSelectedAsteroid: LiveData<Asteroid>
         get() = _navigateToSelectedAsteroid
 
-//    private val asteroidListObserver = Observer<List<Asteroid>> {
+    //    private val asteroidListObserver = Observer<List<Asteroid>> {
 //        //Update new list to RecyclerView
 //        _asteroidList.value = it
 //    }
-    val asteroidList = asteroidsRepository.asteroid
-    val picOfDay = asteroidsRepository.pictureOfDay
 
     init {
-        getAsteroidProperties()
+        viewModelScope.launch {
+            asteroidsRepository.refreshAsteroids()
+            asteroidsRepository.refreshPictureOfDay()
 //        getPictureOfDay()
-        updateFilter(NasaApiFilter.SHOW_TODAY)
+        }
     }
 //    init {
 //        getAsteroidProperties()
@@ -75,17 +78,17 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-    private suspend fun getPictureOfDay() {
-        withContext(Dispatchers.IO) {
-            try {
-                _pictureOfDay.postValue(
-                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
-                )
-            } catch (e: Exception) {
-                Log.e("refreshPictureOfDay", e.printStackTrace().toString())
-            }
-        }
-    }
+//    private suspend fun refreshPictureOfDay() {
+//        withContext(Dispatchers.IO) {
+//            try {
+//                _pictureOfDay.postValue(
+//                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
+//                )
+//            } catch (e: Exception) {
+//                Log.e("refreshPictureOfDay", e.printStackTrace().toString())
+//            }
+//        }
+//    }
 
 
     fun displayAsteroidDetails(asteroid: Asteroid) {
@@ -97,7 +100,7 @@ class MainViewModel(application: Application) : ViewModel() {
     }
 
     // Click func to filter menu items based on enum parameters
-    fun updateFilter (filters: NasaApiFilter) {
-         _asteroidFilter.postValue(filters)
+    fun updateFilter(filters: NasaApiFilter) {
+        _asteroidFilter.postValue(filters)
     }
 }

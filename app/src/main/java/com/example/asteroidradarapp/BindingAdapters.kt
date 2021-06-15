@@ -3,6 +3,9 @@ package com.example.asteroidradarapp
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.example.asteroidradarapp.domain.Asteroid
+import com.example.asteroidradarapp.main.MainAdapter
 
 
 @BindingAdapter("statusIcon")
@@ -40,3 +43,4 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
     val context = textView.context
     textView.text = String.format(context.getString(R.string.km_s_unit_format), number)
 }
+
