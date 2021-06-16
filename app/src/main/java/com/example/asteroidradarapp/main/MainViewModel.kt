@@ -47,23 +47,15 @@ class MainViewModel(application: Application) : ViewModel() {
 
 
     init {
-        viewModelScope.launch {
-            asteroidsRepository.refreshAsteroids()
-            asteroidsRepository.refreshPictureOfDay()
-        }
-    }
-
-
-    private fun getAsteroidProperties() {
-        viewModelScope.launch {
-            try {
+        try {
+            viewModelScope.launch {
                 asteroidsRepository.refreshAsteroids()
-            } catch (e: Exception) {
-                Log.d("ggg", "error: $e")
+                asteroidsRepository.refreshPictureOfDay()
             }
+        } catch (e: Exception) {
+            Log.w("ERROR", e.message.toString())
         }
     }
-
 
     fun displayAsteroidDetails(asteroid: Asteroid) {
         _navigateToSelectedAsteroid.value = asteroid

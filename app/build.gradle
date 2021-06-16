@@ -28,6 +28,11 @@ android {
         }
 
     }
+    
+    buildTypes.each {
+        it.buildConfigField 'String', 'NASA_API_KEY', myApiNasa
+    }
+
     buildFeatures {
         dataBinding true
     }
