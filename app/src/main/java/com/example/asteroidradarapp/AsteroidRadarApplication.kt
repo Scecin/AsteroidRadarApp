@@ -10,6 +10,10 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+/**
+ * We’re going to schedule The workManager in our application class. This is the Android
+ * application which is the main object that the operating system uses to interact with your app.
+ */
 class AsteroidRadarApplication: Application() {
 
     private val applicationScope = CoroutineScope(Dispatchers.Default)

@@ -7,7 +7,6 @@ import com.example.asteroidradarapp.domain.Asteroid
 /**
  * create the DatabaseAsteroid database object.
  */
-
 @Entity
 data class DatabaseAsteroid (
     @PrimaryKey
@@ -20,7 +19,9 @@ data class DatabaseAsteroid (
     val distanceFromEarth: Double,
     val isPotentiallyHazardous: Boolean)
 
-// Add an extension function which converts from database objects to domain objects
+/**
+ * Add an extension function which converts from database objects to domain objects
+ */
 fun List<DatabaseAsteroid>.asDomainModel(): List<Asteroid> {
     return map {
         Asteroid(
@@ -36,7 +37,9 @@ fun List<DatabaseAsteroid>.asDomainModel(): List<Asteroid> {
     }
 }
 
-// Add an extension function which converts from data transfer objects to database objects
+/**
+ * Add an extension function which converts from data transfer objects to database objects
+ */
 fun ArrayList<Asteroid>.asDatabaseModel(): Array<DatabaseAsteroid> {
     return map {
         DatabaseAsteroid(

@@ -7,7 +7,9 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.*
 
-//Create a Database Access object fou our offline cache and tell the UI hat the database changed somehow
+/**
+ * Create a Database Access object for our offline cache and tell the UI hat the database changed somehow
+ */
 @Dao
 interface AsteroidDao {
     @Query("select * from databaseAsteroid order by closeApproachDate desc")
@@ -37,14 +39,18 @@ interface PictureOfDayDao{
     fun clear()
 
 }
-// Implement a database
+/**
+ * Implement a database
+ */
 @Database(entities = [DatabaseAsteroid::class, DatabasePictureOfDay::class], version = 1)
 abstract class AsteroidsDatabase : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
     abstract val pictureOfDayDao: PictureOfDayDao
 }
 
-// Define getAsteroidDatabase
+/**
+ * Define getAsteroidDatabase
+ */
 private lateinit var INSTANCE: AsteroidsDatabase
 
 fun getAsteroidDatabase(context: Context): AsteroidsDatabase {

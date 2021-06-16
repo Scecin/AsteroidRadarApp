@@ -35,10 +35,6 @@ class MainViewModel(application: Application) : ViewModel() {
     val status: LiveData<AsteroidApiStatus>
         get() = _status
 
-//    //This list will be observed in RecyclerView
-//    private val _asteroidList = MutableLiveData<List<Asteroid>>()
-//    val asteroidList: LiveData<List<Asteroid>>
-//        get() = _asteroidList
 
     private val _pictureOfDay = MutableLiveData<PictureOfDay>()
     val pictureOfDay: LiveData<PictureOfDay>
@@ -49,24 +45,14 @@ class MainViewModel(application: Application) : ViewModel() {
     val navigateToSelectedAsteroid: LiveData<Asteroid>
         get() = _navigateToSelectedAsteroid
 
-    //    private val asteroidListObserver = Observer<List<Asteroid>> {
-//        //Update new list to RecyclerView
-//        _asteroidList.value = it
-//    }
 
     init {
         viewModelScope.launch {
             asteroidsRepository.refreshAsteroids()
             asteroidsRepository.refreshPictureOfDay()
-//        getPictureOfDay()
         }
     }
-//    init {
-//        getAsteroidProperties()
-//        getPictureOfDay()
-//    }
 
-//    val pictureOfDay = asteroidsRepository.pictureOfDay
 
     private fun getAsteroidProperties() {
         viewModelScope.launch {
@@ -77,18 +63,6 @@ class MainViewModel(application: Application) : ViewModel() {
             }
         }
     }
-
-//    private suspend fun refreshPictureOfDay() {
-//        withContext(Dispatchers.IO) {
-//            try {
-//                _pictureOfDay.postValue(
-//                    NasaApi.retrofitService.getPictureOfDay(Constants.API_KEY)
-//                )
-//            } catch (e: Exception) {
-//                Log.e("refreshPictureOfDay", e.printStackTrace().toString())
-//            }
-//        }
-//    }
 
 
     fun displayAsteroidDetails(asteroid: Asteroid) {

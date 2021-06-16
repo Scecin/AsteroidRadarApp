@@ -4,7 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.asteroidradarapp.domain.PictureOfDay
 
-//Database object called DatabasePictureOfDay
+/**
+ * create the DatabasePictureOfDay database object.
+ */
 @Entity
 data class DatabasePictureOfDay constructor(
     @PrimaryKey(autoGenerate = true)
@@ -15,7 +17,9 @@ data class DatabasePictureOfDay constructor(
 )
 
 
-//Extension function which converts from database objects to domain objects
+/**
+ * Extension function which converts from database objects to domain objects
+ */
 fun DatabasePictureOfDay.asDomainModel(): PictureOfDay {
     return PictureOfDay(
         mediaType = this.mediaType,
@@ -25,7 +29,9 @@ fun DatabasePictureOfDay.asDomainModel(): PictureOfDay {
     )
 }
 
-//Extension function that converts from data transfer objects to database objects
+/**
+ * Extension function that converts from data transfer objects to database objects
+ */
 fun PictureOfDay.asDatabaseModel(): DatabasePictureOfDay {
     return DatabasePictureOfDay(
         mediaType = this.mediaType,

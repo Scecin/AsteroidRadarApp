@@ -44,15 +44,13 @@ class MainFragment : Fragment() {
         /**
          * Adapter to handle click
          * */
-        asteroidAdapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
+        asteroidAdapter = MainAdapter(MainAdapter.OnClickListener{asteroid ->
             viewModel.displayAsteroidDetails(asteroid)
         })
 
         // Use the RecyclerView
         binding.asteroidRecycler.layoutManager = LinearLayoutManager(requireContext())
-        binding.asteroidRecycler.adapter = MainAdapter(MainAdapter.OnClickListener { asteroid ->
-            viewModel.displayAsteroidDetails(asteroid)
-        })
+        binding.asteroidRecycler.adapter = asteroidAdapter
 
         viewModel.navigateToSelectedAsteroid.observe(viewLifecycleOwner, Observer {
             if (null != it) {

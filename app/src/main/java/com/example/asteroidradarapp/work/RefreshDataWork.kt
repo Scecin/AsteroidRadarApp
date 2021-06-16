@@ -7,8 +7,10 @@ import com.example.asteroidradarapp.database.getAsteroidDatabase
 import com.example.asteroidradarapp.repository.AsteroidRepository
 import retrofit2.HttpException
 
-// Create a worker which extend coroutine worker.
-
+/**
+ * We're going to use Work|Manager to perform tasks when our app is in the background
+ * or even not running.
+ */
 class RefreshDataWorker (appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params){
 
     companion object {
@@ -20,7 +22,6 @@ class RefreshDataWorker (appContext: Context, params: WorkerParameters) : Corout
         val repository = AsteroidRepository(database)
         return try {
             repository.refreshAsteroids()
-//            repository.refreshPictureOfDay()
             Result.success()
         } catch (e: HttpException) {
             Result.retry()

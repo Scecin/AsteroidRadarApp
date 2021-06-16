@@ -13,7 +13,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
         android:orientation="horizontal" >
 
@@ -47,14 +47,15 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_marginEnd="@dimen/spacing_big"
             app:layout_constraintBottom_toBottomOf="@+id/subtitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/title"
             app:statusIcon="@{detail.potentiallyHazardous}"
-            tools:srcCompat="@drawable/ic_status_potentially_hazardous" />
+            tools:srcCompat="@drawable/ic_status_potentially_hazardous"
+            android:contentDescription="@string/hazardous_status_icon"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -32,45 +32,15 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
             it?.asDomainModel()
         }
 
-//    // Apply the AsteroidFilter
-//    fun getAsteroidSelection(filter: NasaApiFilter): LiveData<List<Asteroid>> {
-//        return when (filter) {
-//            (NasaApiFilter.SHOW_SAVE) -> Transformations.map(
-//                database.asteroidDao.getAllAsteroids()
-//            ) {
-//                it.asDomainModel()
-//            }
-//            (NasaApiFilter.SHOW_TODAY) -> Transformations.map(
-//                database.asteroidDao.getTodayAsteroids(
-//                    getStartDateFormatted()
-//                )
-//            ) {
-//                it.asDomainModel()
-//            }
-//            else -> {
-//                Transformations.map(
-//                    database.asteroidDao.getWeekAsteroids(
-//                        getStartDateFormatted(), getEndDateFormatted()
-//                    )
-//                ) {
-//                    it.asDomainModel()
-//                }
-//            }
-//        }
-//    }
-
     suspend fun refreshAsteroids() {
         withContext(Dispatchers.IO) {
             try {
-                val asteroids = NasaApi.retrofitService.getAsteroids(API_KEY, startDate, endDate)
+                val asteroids = NasaApi.retrofitService.getAsteroids(startDate, endDate, API_KEY)
                 val parsedAsteroids = parseAsteroidsJsonResult(JSONObject(asteroids))
                 database.asteroidDao.insertAll(parsedAsteroids.asDatabaseModel())
             } catch (e: Exception) {
                 Log.w("ERROR", e.message.toString())
             }
-//        val asteroid = NasaApi.retrofitService.getAsteroids(startDate, endDate, API_KEY)
-//        val parsedAsteroids = parseAsteroidsJsonResult(JSONObject(asteroid))
-//        database.asteroidDao.insertAll(parsedAsteroids.asDatabaseModel())
         }
     }
 
