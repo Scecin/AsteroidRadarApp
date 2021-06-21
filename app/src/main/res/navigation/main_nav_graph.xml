@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.asteroidradarapp.main.MainFragment"
-        android:label="fragment_main"
+        android:label="Asteroid Radar"
         tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_showDetail"
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.asteroidradarapp.detail.DetailFragment"
-        android:label="fragment_detail"
+        android:label="Asteroid Details"
         tools:layout="@layout/fragment_detail">
 
         <argument
